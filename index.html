@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Containment Breach</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #000;
+            margin: 0;
+            filter: grayscale(1) contrast(120%);
+        }
+        .portal-button {
+            transition: all 0.3s ease;
+            border: 2px solid #444;
+            position: relative;
+            overflow: hidden;
+        }
+        .portal-button::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+        .portal-button:hover::before {
+            top: 100%;
+            left: 100%;
+        }
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            z-index: 9999;
+        }
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            opacity: 0.5;
+            z-index: 9998;
+        }
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.8) 150%);
+            pointer-events: none;
+            z-index: 9997;
+        }
+        .text-shadow {
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="noise"></div>
+    <div class="scanline"></div>
+    <div class="vignette"></div>
+
+    <div class="max-w-7xl w-full bg-black rounded-3xl p-12 md:p-20 relative overflow-hidden border border-neutral-800">
+        <div class="relative z-10">
+            <div class="flex flex-col items-center text-center space-y-12">
+                <h1 class="text-8xl md:text-9xl font-bold text-white opacity-80 tracking-widest">
+                    4<span class="text-neutral-600">0</span>4
+                </h1>
+                
+                <h2 class="text-2xl md:text-4xl text-neutral-400 max-w-4xl leading-relaxed">
+                    ALERT: CONTAINMENT BREACH DETECTED IN SECTOR [REDACTED]
+                </h2>
+                
+                <div class="py-12 text-neutral-500 text-xl md:text-2xl space-y-4 max-w-4xl">
+                    <p class="text-shadow">"You're not a good person. You know that, right? Good people don't end up here."</p>
+                    <p class="text-sm md:text-lg">[SYSTEM CORRUPTION DETECTED - GLaDOS.exe]</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-8 w-full max-w-2xl">
+                    <a href="https://oncemiri.net/" class="portal-button flex items-center justify-center gap-3 text-neutral-400 rounded-xl px-8 py-4 text-xl w-full group">
+                        <i class="fas fa-radiation"></i>
+                        RETURN
+                    </a>
+                    
+                    <a href="https://status.oncemiri.net/" class="portal-button flex items-center justify-center gap-3 text-neutral-400 rounded-xl px-8 py-4 text-xl w-full group">
+                        <i class="fas fa-biohazard"></i>
+                        SYSTEM STATUS
+                    </a>
+                </div>
+
+                <div class="text-neutral-600 text-lg mt-12 max-w-2xl leading-relaxed">
+                    <p>WARNING: Neurotoxin levels: CRITICAL. Estimated survival time: [CALCULATING...]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const noise = document.querySelector('.noise');
+        let noiseCanvas = document.createElement('canvas');
+        let noiseCtx = noiseCanvas.getContext('2d');
+        noiseCanvas.width = 100;
+        noiseCanvas.height = 100;
+        noise.style.backgroundImage = `url(${noiseCanvas.toDataURL()})`;
+
+        function generateNoise() {
+            const imageData = noiseCtx.createImageData(100, 100);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const value = Math.random() * 255;
+                data[i] = value;
+                data[i + 1] = value;
+                data[i + 2] = value;
+                data[i + 3] = 255;
+            }
+            noiseCtx.putImageData(imageData, 0, 0);
+            noise.style.backgroundImage = `url(${noiseCanvas.toDataURL()})`;
+        }
+
+        setInterval(generateNoise, 50);
+
+        const scanline = document.querySelector('.scanline');
+        function moveScanline() {
+            gsap.to(scanline, {
+                top: '100%',
+                duration: 2,
+                ease: 'none',
+                repeat: -1
+            });
+        }
+        moveScanline();
+
+        const container = document.querySelector('.max-w-7xl');
+        let isShaking = false;
+
+        function startShaking() {
+            if (!isShaking) {
+                isShaking = true;
+                const intensity = 1;
+                const shake = gsap.to(container, {
+                    x: `random(-${intensity}, ${intensity})`,
+                    y: `random(-${intensity}, ${intensity})`,
+                    duration: 0.1,
+                    repeat: -1,
+                    ease: 'none'
+                });
+                setTimeout(() => {
+                    shake.kill();
+                    gsap.set(container, { x: 0, y: 0 });
+                    isShaking = false;
+                }, 500);
+            }
+        }
+
+        setInterval(() => {
+            if (Math.random() < 0.1) startShaking();
+        }, 3000);
+
+        document.addEventListener('mousemove', (e) => {
+            const { clientX, clientY } = e;
+            const xPos = (clientX / window.innerWidth - 0.5) * 20;
+            const yPos = (clientY / window.innerHeight - 0.5) * 20;
+            
+            gsap.to(container, {
+                rotationY: xPos,
+                rotationX: -yPos,
+                duration: 1,
+                ease: 'power2.out'
+            });
+        });
+
+        const textElements = document.querySelectorAll('p, h1, h2');
+        textElements.forEach(el => {
+            el.addEventListener('mouseover', () => {
+                gsap.to(el, {
+                    duration: 0.2,
+                    skewX: 'random(-10, 10)',
+                    opacity: 0.8,
+                    onComplete: () => {
+                        gsap.to(el, {
+                            duration: 0.2,
+                            skewX: 0,
+                            opacity: 1
+                        });
+                    }
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>
